@@ -1,0 +1,57 @@
+UI5 Plugin component/ Dynamic tile/ Adding shell plugin
+https://www.youtube.com/watch?v=UbrwbFtaZak
+https://services.odata.org/V3/Northwind/Northwind.svc/Employees/$count
+https://blogs.sap.com/2021/01/06/trick-add-dynamic-tile-on-the-sap-cloud-platform-launchpad/
+IMP: for above crossnavigation properties to work, follow below steps
+Step 1:
+mta.yaml file we need to add 'subaccount' as shown below for the destination for Northwind_Dest added in xs-apps.json which is used in manifest.json url.
+only then the service url will work.
+  parameters:
+    content:
+      subaccount:
+        destinations:
+        - Name: products_ui5mta_html_repo_host
+          ServiceInstanceName: ui5mta-html5-app-host-service
+          ServiceKeyName: ui5mta_html_repo_host-key
+          sap.cloud.service: products
+        - Authentication: OAuth2UserTokenExchange
+          Name: products_uaa_ui5mta
+          ServiceInstanceName: ui5mta-xsuaa-service
+          ServiceKeyName: uaa_ui5mta-key
+          sap.cloud.service: products
+        existing_destinations_policy: ignore
+
+Step2:
+	dataSource can be blank here, there is also other formats when we use datasource if we want to get data from backend, shown in video.
+	format=json is must here else it will throw error.
+        "crossNavigation": {
+            "inbounds": {
+                "intent1": {
+                    "signature": {
+                        "parameters": {},
+                        "additionalParameters": "allowed"
+                    },                    
+                    "semanticObject": "Dynamic",
+                    "action": "display",
+                    "title": "{{appTitle}}",
+                    "icon": "sap-icon://account",
+                    "indicatorDataSource": {
+                        "dataSource": "NWDCount",
+                        "path": "$count?$format=json",
+                        "refresh": 0
+                    }
+                }
+            }
+        },
+        "dataSources": {
+	        "NWDCount": {     
+				 "uri": "/products.comnsproducts/Northwind_Dest/V2/Northwind/Northwind.svc/Products",      
+				 "type": "JSON"
+            },
+            "scopedService":{
+                "uri": "Employees/$count",
+                "type": "JSON"
+            }           
+        }                
+
+***********************************************************************************************************************************************************			
